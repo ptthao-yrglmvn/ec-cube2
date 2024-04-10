@@ -31,7 +31,7 @@ class PluginAutomationCest
     public function _before(AcceptanceTester $I)
     {
         $I->loginAsAdminVer2();
-        // $fileName = 'AmazonPaymentsV2_VN_fixed.tar.gz';
+        // $fileName = 'TopicPath-VN-fixed.tar.gz';
         // $this->filePath = '/'.'plugins/'.$fileName;
         $this->filePath = getenv('FILE_PATH');
 
@@ -104,6 +104,10 @@ class Store_Plugin
         // $this->pluginRepository = $this->em->getRepository(Plugin::class);
     }
 
+    private function getPluginName() {
+        return $this->I->grabTextFrom('span.plugin_name > a');
+    }
+
     public static function start(AcceptanceTester $I, $code)
     {
         $result = new self($I, $code);
@@ -138,13 +142,13 @@ class Store_Plugin
         $this->I->goToAdminPage('admin/ownersstore/');
         $this->I->waitForElement("div[id='system']");
         $this->I->see('プラグイン一覧');
+        $pluginName = $this->getPluginName();
         $this->I->checkOption("#plugin_enable");
         $this->I->seeInPopup('プラグインを有効にしても宜しいですか？');
         $this->I->acceptPopup();
 
-        //TODO Amazon Pay V2を有効にしました。
-        // Get plugin name in span.plugin_name
-        $this->I->seeInPopup('Amazon Pay V2を有効にしました。');
+        $this->I->wait(3);
+        $this->I->seeInPopup($pluginName . 'を有効にしました。');
         $this->I->acceptPopup();
         
         // Popup is still open after reload
@@ -156,7 +160,7 @@ class Store_Plugin
         $this->I->reloadPage();
         // Popup is still open after reload
         $this->I->wait(3);
-        $this->I->seeInPopup('Amazon Pay V2を有効にしました。');
+        $this->I->seeInPopup($pluginName . 'を有効にしました。');
         $this->I->acceptPopup();
         $this->I->seeCheckboxIsChecked("#plugin_enable");
 
@@ -174,21 +178,24 @@ class Store_Plugin
         $this->I->goToAdminPage('admin/ownersstore/');
         $this->I->waitForElement("div[id='system']");
         $this->I->see('プラグイン一覧');
+        $pluginName = $this->getPluginName();
+
         $this->I->seeCheckboxIsChecked("#plugin_enable");
         $this->I->uncheckOption("#plugin_enable");
         $this->I->seeInPopup('プラグインを無効にしても宜しいですか？');
         $this->I->acceptPopup();
 
+
          // Wait for page reload by program
         $this->I->wait(3);
-        $this->I->seeInPopup('Amazon Pay V2を無効にしました。');
+        $this->I->seeInPopup($pluginName . 'を無効にしました。');
         $this->I->acceptPopup();
         $this->I->dontSeeCheckboxIsChecked("#plugin_enable");
 
         // Reload page to verify checkox again
         $this->I->reloadPage();
         $this->I->wait(3);
-        $this->I->seeInPopup('Amazon Pay V2を無効にしました。');
+        $this->I->seeInPopup($pluginName . 'を無効にしました。');
         $this->I->acceptPopup();
         $this->I->dontSeeCheckboxIsChecked("#plugin_enable");
         return $this;
@@ -199,13 +206,15 @@ class Store_Plugin
         $this->I->goToAdminPage('admin/ownersstore/');
         $this->I->waitForElement("div[id='system']");
         $this->I->see('プラグイン一覧');
+        $pluginName = $this->getPluginName();
+
         $this->I->click("a[name='uninstall']");
         $this->I->seeInPopup("一度削除したデータは元に戻せません。\nプラグインを削除しても宜しいですか？");
         $this->I->acceptPopup();
         
         // Wait for page reload by program
         $this->I->wait(3);
-        $this->I->seeInPopup("Amazon Pay V2を削除しました。");
+        $this->I->seeInPopup($pluginName . "を削除しました。");
         $this->I->acceptPopup();
 
         // Check database
