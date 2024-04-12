@@ -30,10 +30,19 @@ class PluginAutomationCest
 
     public function _before(AcceptanceTester $I)
     {
-        $I->loginAsAdminVer2();
-        // $fileName = 'TopicPath-VN-fixed.tar.gz';
+        // Login
+        $I->goToAdminPage();
+
+        $I->submitForm('#form1', [
+            'login_id' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $I->see('ホーム', '#container > h1 > span.title');
+
+        // $fileName = 'AmazonPaymentsV2_VN_fixed.tar.gz';
         // $this->filePath = '/'.'plugins/'.$fileName;
-        $this->filePath = getenv('FILE_PATH');
+        $this->filePath = 'plugins/' . getenv('FILE_PATH');
 
     }
 
@@ -130,6 +139,13 @@ class Store_Plugin
         $this->I->wait(5);
         $this->I->seeInPopup('プラグインをインストールしました。');
         $this->I->acceptPopup();
+
+         // Verify 
+        $this->I->seeElement('table.system-plugin');
+        $this->I->seeElement('table.system-plugin tbody tr td span.plugin_name');
+        $this->I->dontSee('登録されているプラグインはありません。', 'div#system');
+        $this->I->seeLink('削除');
+
 
         // Check folder exists
         // $this->I->assertDirectoryExists($this->config['plugin_realdir'].'/'.$this->code);
